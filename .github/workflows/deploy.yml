@@ -26,20 +26,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
-      - name: Generate package-lock.json
+      - name: Create package-lock.json if missing
         run: |
           if [ ! -f package-lock.json ]; then
-            echo "package-lock.json not found, generating..."
-            npm install --package-lock-only
-          else
-            echo "package-lock.json found"
+            echo "Creating minimal package-lock.json..."
+            echo '{
+              "name": "gitti-ai-pwa",
+              "version": "1.0.0",
+              "lockfileVersion": 2,
+              "requires": true,
+              "packages": {
+                "": {
+                  "name": "gitti-ai-pwa",
+                  "version": "1.0.0"
+                }
+              }
+            }' > package-lock.json
           fi
 
       - name: Install dependencies
         run: |
-          if [ -f package-lock.json ]; then
+          if grep -q "dependencies" package-lock.json; then
             npm ci
           else
             npm install
