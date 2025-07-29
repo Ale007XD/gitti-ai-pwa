@@ -19,14 +19,18 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html'
+      template: path.resolve(__dirname, 'public/index.html')
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public/manifest.json', to: 'manifest.json' },
-        { from: 'public/sw.js', to: 'sw.js' },
-        { from: 'public/icon-192.png', to: 'icon-192.png', force: true },
-        { from: 'public/icon-512.png', to: 'icon-512.png', force: true }
+        {
+          from: path.resolve(__dirname, 'public/manifest.json'),
+          to: path.resolve(__dirname, 'dist/manifest.json')
+        },
+        {
+          from: path.resolve(__dirname, 'public/sw.js'),
+          to: path.resolve(__dirname, 'dist/sw.js')
+        }
       ]
     })
   ],
