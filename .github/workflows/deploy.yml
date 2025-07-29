@@ -27,31 +27,15 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Create package-lock.json if missing
+      - name: Remove invalid package-lock.json if exists
         run: |
-          if [ ! -f package-lock.json ]; then
-            echo "Creating minimal package-lock.json..."
-            echo '{
-              "name": "gitti-ai-pwa",
-              "version": "1.0.0",
-              "lockfileVersion": 2,
-              "requires": true,
-              "packages": {
-                "": {
-                  "name": "gitti-ai-pwa",
-                  "version": "1.0.0"
-                }
-              }
-            }' > package-lock.json
+          if [ -f package-lock.json ]; then
+            echo "Removing existing package-lock.json"
+            rm package-lock.json
           fi
 
       - name: Install dependencies
-        run: |
-          if grep -q "dependencies" package-lock.json; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm install
 
       - name: Build project
         run: npm run build
