@@ -12,23 +12,29 @@ const firebaseConfig = {
     appId: process.env.FIREBASE_APP_ID
 };
 
-// Проверяем, что конфигурация существует
-if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "undefined" || !firebaseConfig.apiKey.trim()) {
-    console.warn("Firebase configuration not found in environment variables. Running in demo mode.");
-    // Можно добавить демо-режим без Firebase
-} else {
-    const app = initializeApp(firebaseConfig);
-    export const auth = getAuth(app);
-    export const db = getFirestore(app);
-}
+let auth = null;
+let db = null;
+let googleProvider = null;
+let app = null;
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
+// Проверяем, что конфигурация существует и валидна
+if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined" && firebaseConfig.apiKey.trim() !== "") {
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        googleProvider = new GoogleAuthProvider();
+        console.log("Firebase initialized successfully");
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+    }
+} else {
+    console.warn("Firebase configuration not found in environment variables. Running in demo mode.");
+}
 
 class AuthService {
     async signInWithGoogle() {
+        if (!auth) throw new Error("Firebase not initialized");
         try {
             const result = await signInWithPopup(auth, googleProvider);
             return result.user;
@@ -38,6 +44,7 @@ class AuthService {
     }
 
     async signInWithEmail(email, password) {
+        if (!auth) throw new Error("Firebase not initialized");
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
             return result.user;
@@ -47,6 +54,7 @@ class AuthService {
     }
 
     async signUpWithEmail(email, password) {
+        if (!auth) throw new Error("Firebase not initialized");
         try {
             const result = await createUserWithEmailAndPassword(auth, email, password);
             return result.user;
@@ -56,6 +64,7 @@ class AuthService {
     }
 
     async logout() {
+        if (!auth) return;
         try {
             await signOut(auth);
         } catch (error) {
@@ -64,8 +73,15 @@ class AuthService {
     }
 
     onAuthStateChanged(callback) {
+        if (!auth) {
+            // В демо-режиме сразу вызываем callback с null
+            setTimeout(() => callback(null), 0);
+            return () => {};
+        }
         return onAuthStateChanged(auth, callback);
     }
 }
 
+// Экспортируем на верхнем уровне
+export { auth, db, googleProvider };
 export default new AuthService();
