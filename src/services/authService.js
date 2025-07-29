@@ -4,12 +4,12 @@ import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
     // Замените на ваши данные Firebase
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCk4RVxjNUJblIdJSUu4P8s-Uz3gpzB8Q0",
+    authDomain: "gitti-ai-pwa.firebaseapp.com",
+    projectId: "gitti-ai-pwa",
+    storageBucket: "gitti-ai-pwa.firebasestorage.app",
+    messagingSenderId: "425585148182",
+    appId: "1:425585148182:web:967ed8d998881c97bed037"
 };
 
 const app = initializeApp(firebaseConfig);
