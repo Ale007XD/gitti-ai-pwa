@@ -13,8 +13,13 @@ const firebaseConfig = {
 };
 
 // Проверяем, что конфигурация существует
-if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "undefined") {
-    console.warn("Firebase configuration not found in environment variables");
+if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "undefined" || !firebaseConfig.apiKey.trim()) {
+    console.warn("Firebase configuration not found in environment variables. Running in demo mode.");
+    // Можно добавить демо-режим без Firebase
+} else {
+    const app = initializeApp(firebaseConfig);
+    export const auth = getAuth(app);
+    export const db = getFirestore(app);
 }
 
 const app = initializeApp(firebaseConfig);
