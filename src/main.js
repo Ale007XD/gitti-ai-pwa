@@ -1,4 +1,4 @@
-import '../src/styles/tailwind.css';
+// Убираем импорт стилей отсюда
 import App from './App';
 
 // Инициализация приложения
