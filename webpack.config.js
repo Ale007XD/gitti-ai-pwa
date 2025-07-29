@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -9,15 +10,11 @@ module.exports = {
     filename: 'bundle.js',
     clean: true
   },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader']
-      }
-    ]
-  },
   plugins: [
+    // Добавляем полифилл для process
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'public/index.html')
     }),
@@ -34,12 +31,9 @@ module.exports = {
       ]
     })
   ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    compress: true,
-    port: 3000,
-    historyApiFallback: true
+  resolve: {
+    fallback: {
+      "process": require.resolve("process/browser")
+    }
   }
 };
