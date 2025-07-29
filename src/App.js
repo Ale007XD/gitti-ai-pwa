@@ -3,6 +3,7 @@ import Auth from './components/Auth';
 import Chat from './components/Chat';
 import History from './components/History';
 import authService from './services/authService';
+import { auth } from './services/authService'; // Импортируем auth
 
 export default class App {
     constructor() {
@@ -17,11 +18,19 @@ export default class App {
         this.updateView();
         
         // Следим за изменением состояния аутентификации
-        authService.onAuthStateChanged((user) => {
-            this.currentUser = user;
-            this.navbar.update(user);
+        // Проверяем, что auth существует перед использованием
+        if (auth && auth.onAuthStateChanged) {
+            auth.onAuthStateChanged((user) => {
+                this.currentUser = user;
+                this.navbar.update(user);
+                this.updateView();
+            });
+        } else {
+            // Демо-режим без Firebase
+            console.log("Running in demo mode without Firebase");
+            this.currentUser = null; // Или установите демо-пользователя
             this.updateView();
-        });
+        }
     }
 
     updateView() {
@@ -30,11 +39,11 @@ export default class App {
 
         if (!this.currentUser) {
             this.currentView = 'auth';
-            const auth = new Auth(() => {
+            const authComponent = new Auth(() => {
                 // После успешной авторизации обновим представление
                 setTimeout(() => this.updateView(), 100);
             });
-            appContainer.appendChild(auth.element);
+            appContainer.appendChild(authComponent.element);
         } else {
             switch (this.currentView) {
                 case 'history':
