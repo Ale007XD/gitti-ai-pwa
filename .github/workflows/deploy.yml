@@ -28,17 +28,29 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Check for package-lock.json
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "package-lock.json not found, generating..."
+            npm install
+          fi
+
       - name: Install dependencies
         run: npm ci
+        if: steps.check-files.outputs.has-lockfile == 'true'
+
+      - name: Install dependencies (fallback)
+        run: npm install
+        if: steps.check-files.outputs.has-lockfile != 'true'
 
       - name: Build project
         run: npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4  # Обновлено с v3 на v4
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3  # Обновлено с v2 на v3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
@@ -52,4 +64,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4  # Рекомендуется обновить до v4
+        uses: actions/deploy-pages@v4
