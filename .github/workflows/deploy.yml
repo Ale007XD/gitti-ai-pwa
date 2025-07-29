@@ -27,18 +27,19 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Remove invalid package-lock.json if exists
-        run: |
-          if [ -f package-lock.json ]; then
-            echo "Removing existing package-lock.json"
-            rm package-lock.json
-          fi
-
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build project
-        run: npm run build
+      - name: Build project with environment variables
+        run: |
+          npm run build
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
