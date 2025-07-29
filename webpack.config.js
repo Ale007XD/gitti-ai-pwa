@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -9,15 +10,11 @@ module.exports = {
     filename: 'bundle.js',
     clean: true
   },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader']
-      }
-    ]
-  },
   plugins: [
+    // Добавляем полифилл для process
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify({})
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'public/index.html')
     }),
@@ -25,11 +22,11 @@ module.exports = {
       patterns: [
         {
           from: path.resolve(__dirname, 'public/manifest.json'),
-          to: path.resolve(__dirname, 'dist/')
+          to: path.resolve(__dirname, 'dist/manifest.json')
         },
         {
           from: path.resolve(__dirname, 'public/sw.js'),
-          to: path.resolve(__dirname, 'dist/')
+          to: path.resolve(__dirname, 'dist/sw.js')
         }
       ]
     })
