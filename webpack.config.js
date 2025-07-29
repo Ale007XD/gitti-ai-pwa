@@ -1,7 +1,28 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+// Создаем массив паттернов для копирования
+const copyPatterns = [];
+
+// Добавляем файлы, которые существуют
+const filesToCopy = [
+  'public/manifest.json',
+  'public/sw.js',
+  'public/favicon.ico'
+];
+
+filesToCopy.forEach(file => {
+  const sourcePath = path.resolve(__dirname, file);
+  if (fs.existsSync(sourcePath)) {
+    copyPatterns.push({
+      from: sourcePath,
+      to: path.resolve(__dirname, 'dist', path.basename(file))
+    });
+  }
+});
 
 module.exports = {
   entry: './src/main.js',
@@ -11,7 +32,6 @@ module.exports = {
     clean: true
   },
   plugins: [
-    // Добавляем полифилл для process
     new webpack.ProvidePlugin({
       process: 'process/browser',
     }),
@@ -19,16 +39,7 @@ module.exports = {
       template: path.resolve(__dirname, 'public/index.html')
     }),
     new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'public/manifest.json'),
-          to: path.resolve(__dirname, 'dist/manifest.json')
-        },
-        {
-          from: path.resolve(__dirname, 'public/sw.js'),
-          to: path.resolve(__dirname, 'dist/sw.js')
-        }
-      ]
+      patterns: copyPatterns
     })
   ],
   resolve: {
